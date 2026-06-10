@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="毎日ケア">
+<title>毎日ケア — Posture × Productivity</title>
+<style>
+:root{
+  --navy:#1A3A5C;--blue:#2E6FAD;--lblue:#E6F1FB;
+  --teal:#0F6E56;--lteal:#D1EFE7;
+  --amber:#BA7517;--lamber:#FDF0D5;
+  --red:#A32D2D;--lred:#FCEBEB;
+  --gray:#5F5E5A;--lgray:#F4F3EF;
+  --border:#E0DDD8;--text:#1A1A18;--muted:#73726C;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI',sans-serif;background:var(--lgray);color:var(--text);font-size:15px;line-height:1.6;min-height:100vh}
+.hdr{background:var(--navy);color:#fff;padding:calc(env(safe-area-inset-top,0px)+12px) 16px 10px;position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between}
+.hdr h1{font-size:15px;font-weight:700}
+.hdr-sub{font-size:10px;opacity:.65;margin-top:1px}
+.tabs{display:flex;background:var(--navy);border-top:1px solid rgba(255,255,255,.1);position:sticky;top:52px;z-index:99}
+.tab{flex:1;padding:9px 4px 8px;font-size:11px;color:rgba(255,255,255,.45);border:none;background:transparent;cursor:pointer;border-bottom:3px solid transparent;font-family:inherit;font-weight:600}
+.tab.active{color:#fff;border-bottom-color:#60C8FF}
+.content{padding:14px 14px 100px}
+.sec{display:none}.sec.active{display:block}
+.card{background:#fff;border-radius:14px;border:1px solid var(--border);padding:14px 16px;margin-bottom:12px}
+.card-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+.irow{margin-bottom:10px}
+.irow label{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-bottom:5px}
+.irow input,.irow select,.irow textarea{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-family:inherit;background:#fff;color:var(--text);-webkit-appearance:none;outline:none}
+.irow input:focus,.irow select:focus{border-color:var(--blue)}
+.irow textarea{resize:none;height:72px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:13px;border-radius:12px;font-size:15px;font-weight:700;border:none;cursor:pointer;font-family:inherit;width:100%}
+.btn:active{opacity:.7}
+.btn-navy{background:var(--navy);color:#fff}
+.btn-teal{background:var(--teal);color:#fff}
+.btn-outline{background:#fff;color:var(--navy);border:2px solid var(--navy)}
+.btn-amber{background:var(--amber);color:#fff}
+.brow{display:flex;gap:9px;margin-top:12px}.brow .btn{flex:1}
+input[type=range]{width:100%;height:28px;-webkit-appearance:none;background:transparent;cursor:pointer;touch-action:pan-y}
+input[type=range]::-webkit-slider-runnable-track{height:5px;border-radius:3px;background:linear-gradient(to right,var(--blue) var(--pct,50%),var(--border) var(--pct,50%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;border-radius:50%;background:var(--navy);border:3px solid #fff;box-shadow:0 2px 5px rgba(0,0,0,.2);margin-top:-10.5px}
+.rl{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:-2px;padding:0 2px}
+.star{font-size:28px;cursor:pointer;opacity:.3;transition:opacity .1s}
+.star.active{opacity:1}
+.export-box{background:var(--lamber);border:1px solid var(--amber);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.export-title{font-size:13px;font-weight:700;color:var(--amber);margin-bottom:6px}
+.export-body{font-size:12px;color:var(--gray);line-height:1.7;margin-bottom:10px}
+.status{display:flex;align-items:center;gap:8px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px}
+.status.ok{background:var(--lteal);color:var(--teal)}
+.status.info{background:var(--lblue);color:var(--navy)}
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.sdot.ok{background:var(--teal)}.sdot.info{background:var(--blue)}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <h1>毎日ケア — P×P</h1>
+    <div class="hdr-sub" id="hdr-name">設定から名前を入力してください</div>
+  </div>
+  <div id="streak-badge" style="font-size:12px;font-weight:700;color:#4ade80"></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="sw('dash')">ホーム</button>
+  <button class="tab" onclick="sw('care')">毎日ケア</button>
+  <button class="tab" onclick="sw('personal')">感想記録</button>
+  <button class="tab" onclick="sw('mydata')">マイデータ</button>
+</div>
+
+<div class="content">
+
+<!-- ===== ホーム ===== -->
+<div id="sec-dash" class="sec active">
+  <div id="db-theme-banner" style="background:var(--lblue);border-radius:12px;padding:13px 14px;margin-bottom:12px">
+    <div style="font-size:11px;color:var(--blue);font-weight:700;margin-bottom:3px">今週のテーマ</div>
+    <div id="db-theme-title" style="font-size:16px;font-weight:700;color:var(--navy)">—</div>
+    <div id="db-theme-sub" style="font-size:12px;color:var(--gray);margin-top:2px">—</div>
+  </div>
+
+  <button class="btn btn-teal" onclick="sw('care')" id="db-main-btn" style="margin-bottom:8px">今日の3分ケアを記録する</button>
+  <div id="db-main-status" style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:14px"></div>
+
+  <div class="card">
+    <div class="card-title">今週の記録</div>
+    <div id="db-week-cal" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="background:var(--lgray);border-radius:10px;padding:10px;text-align:center">
+        <div id="db-streak" style="font-size:24px;font-weight:700;color:var(--teal)">0</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">連続日数</div>
+      </div>
+      <div style="background:var(--lgray);border-radius:10px;padding:10px;text-align:center">
+        <div id="db-month-count" style="font-size:24px;font-weight:700;color:var(--blue)">0</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">今月の実施回数</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">直近の体調記録</div>
+    <div id="db-recent-ci" style="font-size:13px;color:var(--muted)">まだ記録がありません</div>
+  </div>
+</div>
+
+<!-- ===== 毎日ケア ===== -->
+<div id="sec-care" class="sec">
+  <div class="card" style="background:linear-gradient(135deg,#0F6E56,#185FA5);color:#fff;border:none;margin-bottom:12px">
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">毎日5〜10分 セルフケア</div>
+    <div style="font-size:12px;opacity:.8">職種別プログラム × 月次ローテーション</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">職種・プログラム設定</div>
+    <div class="irow">
+      <label>職種タイプ</label>
+      <select id="care-job" onchange="renderCareProgram()" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-family:inherit;background:#fff;-webkit-appearance:none">
+        <option value="desk">デスクワーク職（PC・事務）</option>
+        <option value="stand">立ち仕事・単純作業</option>
+        <option value="sales">営業職・移動が多い</option>
+      </select>
+    </div>
+    <div class="irow">
+      <label>実施月</label>
+      <select id="care-phase" onchange="renderCareProgram()" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-family:inherit;background:#fff;-webkit-appearance:none">
+        <option value="1">1ヶ月目 — 基礎ストレッチ重点</option>
+        <option value="2">2ヶ月目 — 体幹強化重点</option>
+        <option value="3">3ヶ月目 — 姿勢矯正重点</option>
+        <option value="4">4ヶ月目〜 — 総合維持</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">今月のプログラム</div>
+    <div id="care-program-list"></div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)">
+      合計時間目安：<span id="care-total-time" style="font-weight:700;color:var(--navy)">—分</span>
+    </div>
+  </div>
+
+  <div class="card" id="checkin-card">
+    <div class="card-title">10秒チェックイン</div>
+    <div id="ci-step-indicator" style="display:flex;gap:6px;justify-content:center;margin-bottom:14px"></div>
+    <div id="ci-content"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">今月の参加カレンダー</div>
+    <div id="care-calendar"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px">
+      <div style="background:var(--lgray);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:22px;font-weight:700;color:var(--navy)" id="care-attend-count">0</div>
+        <div style="font-size:11px;color:var(--muted)">今月の参加日数</div>
+      </div>
+      <div style="background:var(--lteal);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:22px;font-weight:700;color:var(--teal)" id="care-attend-rate">0%</div>
+        <div style="font-size:11px;color:var(--muted)">参加率</div>
+      </div>
+      <div style="background:var(--lamber);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:22px;font-weight:700;color:var(--amber)" id="care-attend-streak">0</div>
+        <div style="font-size:11px;color:var(--muted)">連続日数</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 個人感想 ===== -->
+<div id="sec-personal" class="sec">
+  <div class="card">
+    <div class="card-title">今月の体調感想を記録する</div>
+    <div class="irow">
+      <label>記録月</label>
+      <input type="month" id="pf-month">
+    </div>
+    <div class="card-title" style="margin-top:12px">身体の変化（5段階）</div>
+    <div class="three">
+      <div class="irow"><label>首・肩のコリ</label><select id="pf-neck" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;-webkit-appearance:none"><option value="5">かなり改善</option><option value="4">少し改善</option><option value="3" selected>変わらない</option><option value="2">少し悪化</option><option value="1">かなり悪化</option></select></div>
+      <div class="irow"><label>腰の重さ</label><select id="pf-back" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;-webkit-appearance:none"><option value="5">かなり改善</option><option value="4">少し改善</option><option value="3" selected>変わらない</option><option value="2">少し悪化</option><option value="1">かなり悪化</option></select></div>
+      <div class="irow"><label>頭痛・目</label><select id="pf-head" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;-webkit-appearance:none"><option value="5">かなり改善</option><option value="4">少し改善</option><option value="3" selected>変わらない</option><option value="2">少し悪化</option><option value="1">かなり悪化</option></select></div>
+      <div class="irow"><label>眠りの質</label><select id="pf-sleep" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;-webkit-appearance:none"><option value="5">かなり改善</option><option value="4">少し改善</option><option value="3" selected>変わらない</option><option value="2">少し悪化</option><option value="1">かなり悪化</option></select></div>
+      <div class="irow"><label>疲れやすさ</label><select id="pf-fatigue" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;-webkit-appearance:none"><option value="5">かなり改善</option><option value="4">少し改善</option><option value="3" selected>変わらない</option><option value="2">少し悪化</option><option value="1">かなり悪化</option></select></div>
+      <div class="irow"><label>午後の集中力</label><select id="pf-conc" style="width:100%;padding:8px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:inherit;background:#fff;-webkit-appearance:none"><option value="5">かなり改善</option><option value="4">少し改善</option><option value="3" selected>変わらない</option><option value="2">少し悪化</option><option value="1">かなり悪化</option></select></div>
+    </div>
+    <div class="irow">
+      <label>施術・指導への満足度</label>
+      <div style="display:flex;gap:8px;margin-top:4px" id="pf-stars">
+        <span class="star" onclick="setStar(1)">★</span>
+        <span class="star" onclick="setStar(2)">★</span>
+        <span class="star" onclick="setStar(3)">★</span>
+        <span class="star" onclick="setStar(4)">★</span>
+        <span class="star" onclick="setStar(5)">★</span>
+      </div>
+    </div>
+    <div class="irow"><label>自由コメント</label><textarea id="pf-comment" placeholder="身体の変化、気づいたこと、要望など"></textarea></div>
+    <button class="btn btn-navy" onclick="savePersonal()">保存</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title">過去の記録</div>
+    <div id="personal-list"><div style="color:var(--muted);font-size:13px">まだ記録がありません</div></div>
+  </div>
+</div>
+
+<!-- ===== マイデータ（エクスポート） ===== -->
+<div id="sec-mydata" class="sec">
+
+  <div class="export-box">
+    <div class="export-title">データを管理者に提出する</div>
+    <div class="export-body">
+      週次または月次でデータをエクスポートし、管理者（車田 愼吾）に送付してください。<br>
+      送付方法：メール添付 または LINE で送信
+    </div>
+    <div class="two" style="margin-bottom:10px">
+      <button class="btn btn-amber" onclick="exportData('week')">📤 今週分をエクスポート</button>
+      <button class="btn btn-outline" onclick="exportData('month')" style="border-color:var(--amber);color:var(--amber)">📤 今月分をエクスポート</button>
+    </div>
+    <div style="font-size:11px;color:var(--gray)">※ エクスポートしたJSONファイルを管理者アプリで読み込むとデータが反映されます</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">エクスポート内容</div>
+    <div id="export-preview" style="font-size:13px;color:var(--muted);line-height:1.8"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">マイ設定</div>
+    <div class="irow"><label>氏名 *</label><input type="text" id="cfg-name" placeholder="山田 太郎"></div>
+    <div class="irow"><label>部署</label><input type="text" id="cfg-dept" placeholder="営業課"></div>
+    <div class="irow"><label>職種</label>
+      <select id="cfg-job" style="width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-family:inherit;background:#fff;-webkit-appearance:none">
+        <option value="desk">デスクワーク職</option>
+        <option value="stand">立ち仕事・単純作業</option>
+        <option value="sales">営業職・移動が多い</option>
+      </select>
+    </div>
+    <button class="btn btn-navy" onclick="saveCfg()">設定を保存</button>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+      <button class="btn btn-outline" onclick="clearMyData()" style="font-size:13px;padding:10px;color:var(--red);border-color:var(--red)">自分のデータを削除</button>
+    </div>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<script>
+// ============================================================
+// ストレージ
+// ============================================================
+const LS={
+  get:(k,d=[])=>{try{return JSON.parse(localStorage.getItem(k))||d}catch{return d}},
+  set:(k,v)=>localStorage.setItem(k,JSON.stringify(v)),
+  cfg:()=>LS.get('sc_cfg',{}),
+  ci:()=>LS.get('sc_ci_records',[]),
+  saveCi:(d)=>LS.set('sc_ci_records',d),
+  attend:()=>LS.get('sc_attend',[]),
+  saveAttend:(d)=>LS.set('sc_attend',d),
+  personal:()=>LS.get('sc_personal',[]),
+  savePersonal:(d)=>LS.set('sc_personal',d),
+};
+
+// ============================================================
+// タブ切替
+// ============================================================
+function sw(id){
+  ['dash','care','personal','mydata'].forEach((t,i)=>{
+    document.querySelectorAll('.tab')[i].classList.toggle('active',t===id);
+    document.getElementById('sec-'+t).classList.toggle('active',t===id);
+  });
+  if(id==='dash'){renderDash();}
+  if(id==='care'){renderCareProgram();renderCIStep();renderCareCalendar();}
+  if(id==='personal'){renderPersonalList();}
+  if(id==='mydata'){renderExportPreview();loadCfgForm();}
+}
+
+// ============================================================
+// 今週のテーマ
+// ============================================================
+const WEEKLY_THEMES=[
+  {title:'胸椎モビリゼーション週間',sub:'猫背リセット — 1日2回 × 10回',ex:['S-03','E-04']},
+  {title:'腸腰筋ストレッチ週間',sub:'反り腰・骨盤前傾を整える',ex:['S-04','E-02']},
+  {title:'チンタック習慣化週間',sub:'頭部前方偏位を改善する',ex:['E-01','S-01']},
+  {title:'肩甲骨リセット週間',sub:'巻き肩・肩こりを根本から',ex:['S-02','E-04']},
+  {title:'体幹インナーマッスル週間',sub:'腰痛予防の土台を作る',ex:['E-02','E-03']},
+  {title:'後頭下筋ほぐし週間',sub:'頭痛・目の疲れに集中ケア',ex:['S-09','E-07']},
+  {title:'股関節モビリティ週間',sub:'骨盤の歪みを整える',ex:['S-10','S-05']},
+  {title:'壁立ちドリル週間',sub:'正しい姿勢を体に覚えさせる',ex:['E-05','E-01']},
+  {title:'足裏・足首ケア週間',sub:'全身の姿勢を下から支える',ex:['S-07','E-06']},
+  {title:'自律神経リセット週間',sub:'4-7-8呼吸で午後の集中力UP',ex:['E-07','S-09']},
+  {title:'ラジオ体操強化週間',sub:'全身を3分でリフレッシュ',ex:['E-09','S-08']},
+  {title:'総合姿勢チェック週間',sub:'全部位を順番に確認する',ex:['E-05','S-03']},
+];
+function getWeeklyTheme(){
+  const d=new Date(),s=new Date('2026-01-05');
+  const w=Math.max(0,Math.floor((d-s)/(7*24*60*60*1000)));
+  return WEEKLY_THEMES[w%WEEKLY_THEMES.length];
+}
+function getDayOfWeek(){return new Date().getDay();}
+
+// ============================================================
+// ダッシュボード
+// ============================================================
+function isTodayDone(){
+  const today=new Date().toLocaleDateString('ja-JP');
+  return LS.ci().some(r=>r.date===today&&r.session!=='skip');
+}
+function calcStreak(){
+  const doneSet=new Set(LS.ci().filter(r=>r.session!=='skip').map(r=>r.date));
+  let s=0; const now=new Date();
+  for(let i=0;i<60;i++){const d=new Date(now);d.setDate(d.getDate()-i);if(doneSet.has(d.toLocaleDateString('ja-JP')))s++;else if(i>0)break;}
+  return s;
+}
+function calcMonthCount(){
+  const now=new Date();
+  const ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  return LS.ci().filter(r=>r.session!=='skip'&&r.dateISO&&r.dateISO.startsWith(ym)).length;
+}
+
+function renderDash(){
+  const cfg=LS.cfg();
+  const nameEl=document.getElementById('hdr-name');
+  if(nameEl) nameEl.textContent=cfg.name?(cfg.name+(cfg.dept?' · '+cfg.dept:'')):' 設定から名前を入力してください';
+
+  const theme=getWeeklyTheme();
+  const ttEl=document.getElementById('db-theme-title');
+  const tsEl=document.getElementById('db-theme-sub');
+  if(ttEl) ttEl.textContent=theme.title;
+  if(tsEl) tsEl.textContent=theme.sub;
+
+  const day=getDayOfWeek();
+  const banner=document.getElementById('db-theme-banner');
+  if(banner){
+    if(day===3){banner.style.background='var(--lamber)';banner.querySelector('div').style.color='var(--amber)';}
+    else if(day===5){banner.style.background='var(--lteal)';banner.querySelector('div').style.color='var(--teal)';}
+    else{banner.style.background='var(--lblue)';banner.querySelector('div').style.color='var(--blue)';}
+  }
+
+  const btn=document.getElementById('db-main-btn');
+  const statusEl=document.getElementById('db-main-status');
+  if(isTodayDone()){
+    if(btn){btn.textContent='今日の記録完了 ✓';btn.style.background='var(--teal)';btn.style.opacity='.85';}
+    if(statusEl) statusEl.textContent='連続'+calcStreak()+'日達成中！';
+  } else {
+    if(btn){btn.textContent='今日の3分ケアを記録する';btn.style.background='var(--teal)';btn.style.opacity='1';}
+    const msgs={1:'今週のテーマを確認して始めましょう',3:'週の中間チェック。ここまで続いていますか？',5:'今週の振り返りをしましょう'};
+    if(statusEl&&msgs[day]) statusEl.textContent=msgs[day];
+  }
+
+  const streakEl=document.getElementById('db-streak');
+  const monthEl=document.getElementById('db-month-count');
+  const badgeEl=document.getElementById('streak-badge');
+  const s=calcStreak();
+  if(streakEl) streakEl.textContent=s;
+  if(monthEl)  monthEl.textContent=calcMonthCount();
+  if(badgeEl)  badgeEl.textContent=s>=7?'🔥'+s+'日':'';
+
+  // 週間カレンダー
+  const calEl=document.getElementById('db-week-cal');
+  if(calEl){
+    const doneSet=new Set(LS.ci().filter(r=>r.session!=='skip').map(r=>r.date));
+    const today=new Date(),todayStr=today.toLocaleDateString('ja-JP');
+    const dow=today.getDay(),monday=new Date(today);
+    monday.setDate(today.getDate()-(dow===0?6:dow-1));
+    const days=['日','月','火','水','木','金','土'];
+    calEl.innerHTML='';
+    for(let i=0;i<7;i++){
+      const d=new Date(monday);d.setDate(monday.getDate()+i);
+      const ds=d.toLocaleDateString('ja-JP'),isToday=ds===todayStr,done=doneSet.has(ds),isFuture=d>today;
+      const cell=document.createElement('div');cell.style.cssText='text-align:center';
+      const lbl=document.createElement('div');lbl.style.cssText='font-size:9px;color:var(--muted);margin-bottom:3px';lbl.textContent=days[d.getDay()];
+      const dot=document.createElement('div');dot.style.cssText='width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;margin:0 auto;font-weight:700';
+      if(done){dot.style.background='var(--lteal)';dot.style.color='var(--teal)';dot.textContent='✓';}
+      else if(isToday){dot.style.background='var(--navy)';dot.style.color='#fff';dot.textContent=d.getDate();}
+      else if(isFuture){dot.style.background='var(--lgray)';dot.style.color='var(--muted)';dot.textContent='—';}
+      else{dot.style.background='var(--lgray)';dot.style.color='var(--muted)';dot.textContent=d.getDate();}
+      cell.appendChild(lbl);cell.appendChild(dot);calEl.appendChild(cell);
+    }
+  }
+
+  // 直近チェックイン
+  const recentEl=document.getElementById('db-recent-ci');
+  if(recentEl){
+    const records=LS.ci().slice(0,3);
+    if(!records.length){recentEl.textContent='まだ記録がありません';return;}
+    recentEl.innerHTML=records.map(r=>{
+      const labels={neck:'首肩',back:'腰',focus:'集中力'};
+      const scores=r.session!=='skip'?Object.entries(labels).map(([k,l])=>r[k]>0?l+':'+('★'.repeat(r[k])+('☆'.repeat(5-r[k]))):'').filter(Boolean).join('　'):' スキップ';
+      return '<div style="padding:7px 0;border-bottom:0.5px solid var(--border);font-size:12px"><span style="color:var(--muted)">'+r.date+'</span> '+scores+'</div>';
+    }).join('');
+  }
+}
+
+// ============================================================
+// 毎日ケアプログラム
+// ============================================================
+const EXERCISES={
+  'S-01':{name:'胸鎖乳突筋ストレッチ',type:'S',area:'首',time:2,
+    desc:'耳を肩に近づけるように傾け首筋を伸ばす。左右各30秒×2セット。',
+    youtube:'https://www.youtube.com/watch?v=ekhLf9xM48w'},
+  'S-02':{name:'僧帽筋リリース',type:'S',area:'肩',time:2,
+    desc:'腕を後ろで組み肩甲骨を寄せながら肩を下げて保持。30秒×2セット。',
+    youtube:'https://www.youtube.com/watch?v=Hgt-90SNV5s'},
+  'S-03':{name:'胸椎モビリゼーション',type:'S',area:'背中',time:2,
+    desc:'椅子に座り両手を頭の後ろで組み上を向きながら胸を開く。10回×2セット。',
+    youtube:'https://www.youtube.com/watch?v=Hgt-90SNV5s'},
+  'S-04':{name:'腸腰筋ストレッチ',type:'S',area:'腰',time:3,
+    desc:'片膝を床につけランジ姿勢で上体を起こす。各45秒×2セット。',
+    youtube:'https://www.youtube.com/watch?v=yM14vLOHJco'},
+  'S-05':{name:'大臀筋ピジョン',type:'S',area:'股関節',time:3,
+    desc:'床に座り片足を前に横向きに置き前傾して股関節を伸ばす。各60秒×2セット。',
+    youtube:'https://www.youtube.com/watch?v=yM14vLOHJco'},
+  'S-06':{name:'ハムストリングスストレッチ',type:'S',area:'膝裏',time:2,
+    desc:'椅子に座り片足を前に伸ばし上体を前傾。各30秒×2セット。',
+    youtube:'https://www.youtube.com/watch?v=Hgt-90SNV5s'},
+  'S-07':{name:'足底筋膜ローリング',type:'S',area:'足裏',time:2,
+    desc:'テニスボールを土踏まずに当て体重をかけて転がす。各1分。',
+    youtube:'https://www.youtube.com/watch?v=yM14vLOHJco'},
+  'S-08':{name:'肩甲骨ワイパー',type:'S',area:'肩甲骨',time:2,
+    desc:'両肘を90°に曲げ肩甲骨を寄せながら腕を上下に動かす。20回×2セット。',
+    youtube:'https://www.youtube.com/watch?v=Hgt-90SNV5s'},
+  'S-09':{name:'後頭下筋指圧',type:'S',area:'頭痛',time:2,
+    desc:'両手の中指で後頭部のくぼみを押す。円を描くように1分。',
+    youtube:'https://www.youtube.com/watch?v=ekhLf9xM48w'},
+  'S-10':{name:'90-90股関節ストレッチ',type:'S',area:'股関節',time:3,
+    desc:'床に座り両膝を90°に曲げて横向きに置く。前傾して保持。各60秒×2セット。',
+    youtube:'https://www.youtube.com/watch?v=yM14vLOHJco'},
+  'E-01':{name:'チンタック',type:'E',area:'頸部',time:2,
+    desc:'あごを引いて首を後ろに引く動作を繰り返す。10回×3セット。',
+    youtube:'https://www.youtube.com/watch?v=c3slXBIAd2c'},
+  'E-02':{name:'ドローイングイン',type:'E',area:'腹横筋',time:2,
+    desc:'息を吐きながらおへその下を引き込み10秒キープ。10回×3セット。',
+    youtube:'https://www.youtube.com/watch?v=XJD9jVI76qI'},
+  'E-03':{name:'デッドバグ',type:'E',area:'体幹',time:3,
+    desc:'仰向けで腕・脚を交互に伸ばす。腰が浮かないよう維持。10回×2セット。',
+    youtube:'https://www.youtube.com/watch?v=XJD9jVI76qI'},
+  'E-04':{name:'肩甲骨内転エクサイズ',type:'E',area:'姿勢',time:2,
+    desc:'肩甲骨を中央に寄せて5秒キープ。15回×3セット。',
+    youtube:'https://www.youtube.com/watch?v=Hgt-90SNV5s'},
+  'E-05':{name:'壁立ちドリル',type:'E',area:'全身姿勢',time:2,
+    desc:'後頭部・肩甲骨・お尻・かかとを壁につけて2分立つ。',
+    youtube:'https://www.youtube.com/watch?v=Hgt-90SNV5s'},
+  'E-06':{name:'カーフレイズ',type:'E',area:'下腿',time:2,
+    desc:'つま先立ちを繰り返す。20回×2セット。',
+    youtube:'https://www.youtube.com/watch?v=yM14vLOHJco'},
+  'E-07':{name:'4-7-8呼吸法',type:'E',area:'自律神経',time:3,
+    desc:'4秒吸う→7秒止める→8秒かけて吐く。5サイクル。',
+    youtube:'https://www.youtube.com/watch?v=XJD9jVI76qI'},
+  'E-08':{name:'グッドモーニング',type:'E',area:'腰背部',time:2,
+    desc:'足幅肩幅、膝を軽く曲げ上体を前傾させゆっくり起こす。10回×2セット。',
+    youtube:'https://www.youtube.com/watch?v=yM14vLOHJco'},
+  'E-09':{name:'ラジオ体操第一',type:'E',area:'全身',time:3,
+    desc:'NHKラジオ体操第一を1回通しで実施。全身の関節を動かし血行促進。',
+    youtube:'https://www.youtube.com/watch?v=_YZZfaMGEOU'},
+  'E-10':{name:'オフィス・スクワット',type:'E',area:'下肢',time:2,
+    desc:'椅子から立つ座る動作を応用。深く腰を落とし10回×2セット。',
+    youtube:'https://www.youtube.com/watch?v=yM14vLOHJco'},
+};
+const PROGRAMS={
+  desk:{1:['S-01','S-02','S-03','E-09','E-07'],2:['S-04','E-01','E-02','E-03','E-09'],3:['E-01','E-04','E-05','S-01','E-09'],4:['S-02','S-03','E-02','E-04','E-07','E-09']},
+  stand:{1:['S-04','S-06','S-07','E-09','E-06'],2:['S-05','S-10','E-10','E-06','E-09'],3:['S-04','S-07','E-06','E-08','E-09'],4:['S-05','S-06','E-06','E-10','E-07','E-09']},
+  sales:{1:['S-01','S-09','E-07','E-09','E-05'],2:['S-10','E-08','E-01','E-07','E-09'],3:['S-01','S-09','E-05','E-07','E-09'],4:['S-01','S-10','E-01','E-08','E-07','E-09']},
+};
+
+function renderCareProgram(){
+  const job=document.getElementById('care-job')?.value||'desk';
+  const phase=document.getElementById('care-phase')?.value||'1';
+  const cfg=LS.cfg();
+  if(cfg.job&&document.getElementById('care-job')) document.getElementById('care-job').value=cfg.job;
+  const program=PROGRAMS[job]?.[phase]||PROGRAMS.desk[1];
+  let total=0;
+  document.getElementById('care-program-list').innerHTML=program.map(id=>{
+    const ex=EXERCISES[id];total+=ex.time;
+    const tc=ex.type==='S'?'var(--navy)':' var(--teal)';
+    const bg=ex.type==='S'?'var(--lblue)':' var(--lteal)';
+    const videoBtn = ex.youtube
+      ? `<a href="${ex.youtube}" target="_blank" rel="noopener"
+           style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:5px 12px;background:#FF0000;color:#fff;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none">
+           ▶ 動画を見る</a>`
+      : `<span style="display:inline-flex;align-items:center;gap:4px;margin-top:6px;padding:5px 12px;background:var(--lgray);color:var(--muted);border-radius:8px;font-size:12px">動画準備中</span>`;
+    return `<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="flex-shrink:0;width:36px;height:36px;border-radius:50%;background:${bg};color:${tc};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700">${id}</div>
+      <div style="flex:1"><div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px">${ex.name}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">${ex.desc}</div>
+      <div style="font-size:11px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+        <span style="background:var(--lgray);padding:2px 8px;border-radius:10px;color:var(--muted)">${ex.area}</span>
+        <span style="background:var(--lgray);padding:2px 8px;border-radius:10px;color:var(--muted)">約${ex.time}分</span>
+      </div>
+      ${videoBtn}</div></div>`;
+  }).join('');
+  document.getElementById('care-total-time').textContent=total;
+}
+
+// ============================================================
+// 10秒チェックイン
+// ============================================================
+let ciStep=0,ciData={};
+const CI_STEPS=[
+  {id:'session',type:'session'},
+  {id:'neck',type:'scale',q:'首・肩の状態は？',low:'かなりつらい',high:'快適'},
+  {id:'back',type:'scale',q:'腰の状態は？',low:'かなりつらい',high:'快適'},
+  {id:'focus',type:'scale',q:'午後の集中力は？',low:'集中できない',high:'よく集中できた'},
+];
+
+function renderCIStep(){
+  const dotsEl=document.getElementById('ci-step-indicator');
+  const contentEl=document.getElementById('ci-content');
+  if(!dotsEl||!contentEl) return;
+  dotsEl.innerHTML=CI_STEPS.map((_,i)=>{
+    const s=i<ciStep?'background:var(--teal)':i===ciStep?'background:var(--navy)':' background:var(--border)';
+    return `<div style="width:8px;height:8px;border-radius:50%;${s}"></div>`;
+  }).join('');
+  const step=CI_STEPS[ciStep];
+  if(step.type==='session'){
+    contentEl.innerHTML=`
+      <div style="font-size:15px;font-weight:700;text-align:center;margin-bottom:14px">実施しましたか？</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div onclick="ciSelectSession('morning')" id="ci-s-morning" style="border:1.5px solid var(--border);border-radius:12px;padding:13px 8px;text-align:center;cursor:pointer;background:#fff">
+          <div style="font-size:14px;font-weight:700">朝の部</div><div style="font-size:11px;color:var(--muted);margin-top:2px">始業前3分</div></div>
+        <div onclick="ciSelectSession('afternoon')" id="ci-s-afternoon" style="border:1.5px solid var(--border);border-radius:12px;padding:13px 8px;text-align:center;cursor:pointer;background:#fff">
+          <div style="font-size:14px;font-weight:700">午後の部</div><div style="font-size:11px;color:var(--muted);margin-top:2px">3時前後3分</div></div>
+      </div>
+      <div onclick="ciSkip()" style="border:0.5px solid var(--border);border-radius:12px;padding:11px;text-align:center;cursor:pointer;font-size:13px;color:var(--muted)">今日はスキップ</div>`;
+  } else {
+    const cur=ciData[step.id]||0;
+    contentEl.innerHTML=`
+      <div style="font-size:15px;font-weight:700;text-align:center;margin-bottom:14px">${step.q}</div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-bottom:8px">
+        ${[1,2,3,4,5].map(v=>`<div onclick="ciSelectScale('${step.id}',${v})" style="width:52px;height:52px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;cursor:pointer;border:1.5px solid;${v===cur?'border-color:var(--navy);background:var(--lblue);color:var(--navy)':' border-color:var(--border);background:#fff;color:var(--muted)'}">${v}</div>`).join('')}
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);padding:0 4px;margin-bottom:14px"><span>${step.low}</span><span>${step.high}</span></div>
+      ${cur>0?'<button class="btn btn-navy" onclick="ciNextStep()">次へ →</button>':''}`; 
+  }
+}
+
+function ciSelectSession(sess){
+  ciData.session=sess;
+  ['morning','afternoon'].forEach(s=>{
+    const el=document.getElementById('ci-s-'+s);
+    if(el){el.style.borderColor=s===sess?'var(--navy)':' var(--border)';el.style.background=s===sess?'var(--lblue)':' #fff';}
+  });
+  setTimeout(()=>{ciStep=1;renderCIStep();},300);
+}
+function ciSelectScale(key,val){ciData[key]=val;renderCIStep();}
+function ciNextStep(){ciStep++;if(ciStep>=CI_STEPS.length){ciFinish();return;}renderCIStep();}
+
+function ciSkip(){
+  const today=new Date();
+  const rec={id:Date.now(),date:today.toLocaleDateString('ja-JP'),dateISO:today.toISOString().slice(0,7),session:'skip',neck:0,back:0,focus:0};
+  const d=LS.ci();d.unshift(rec);LS.saveCi(d);
+  const contentEl=document.getElementById('ci-content');
+  if(contentEl) contentEl.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">スキップを記録しました。また明日！</div>';
+  renderCareCalendar();renderDash();ciStep=0;ciData={};
+}
+
+function ciFinish(){
+  const today=new Date();
+  const cfg=LS.cfg();
+  const rec={
+    id:Date.now(),date:today.toLocaleDateString('ja-JP'),
+    dateISO:today.toISOString().slice(0,7),
+    session:ciData.session||'morning',
+    neck:ciData.neck||0,back:ciData.back||0,focus:ciData.focus||0,
+    name:cfg.name||'',dept:cfg.dept||'',
+  };
+  const d=LS.ci();d.unshift(rec);LS.saveCi(d.slice(0,365));
+  const attend=LS.attend();
+  const ds=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  if(!attend.includes(ds)){attend.push(ds);LS.saveAttend(attend);}
+  const streak=calcStreak(),cnt=calcMonthCount();
+  const dotsEl=document.getElementById('ci-step-indicator');
+  const contentEl=document.getElementById('ci-content');
+  if(dotsEl) dotsEl.innerHTML='';
+  if(contentEl) contentEl.innerHTML=`
+    <div style="text-align:center">
+      <div style="font-size:40px;margin-bottom:8px">✓</div>
+      <div style="font-size:17px;font-weight:700;margin-bottom:4px">記録しました！</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">連続 <span style="color:var(--teal);font-weight:700">${streak}日</span>　今月 <span style="color:var(--blue);font-weight:700">${cnt}回</span></div>
+      ${streak>=7?'<div style="background:var(--lteal);border-radius:10px;padding:8px 12px;margin-bottom:8px;font-size:13px;color:var(--teal);font-weight:700">🔥 '+streak+'日連続達成！</div>':''}
+      <button class="btn btn-outline" onclick="ciStep=0;ciData={};renderCIStep()" style="margin-top:8px;font-size:13px;padding:10px">もう一度記録する</button>
+    </div>`;
+  renderCareCalendar();renderDash();ciStep=0;ciData={};
+}
+
+function renderCareCalendar(){
+  const attend=new Set(LS.attend());
+  const now=new Date();
+  const y=now.getFullYear(),m=now.getMonth();
+  const dim=new Date(y,m+1,0).getDate(),today=now.getDate();
+  const ym=y+'-'+String(m+1).padStart(2,'0');
+  let cal='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:8px">';
+  ['日','月','火','水','木','金','土'].forEach(d=>cal+=`<div style="text-align:center;font-size:11px;font-weight:600;color:var(--muted);padding:4px 0">${d}</div>`);
+  const start=new Date(y,m,1).getDay();
+  for(let i=0;i<start;i++) cal+='<div></div>';
+  for(let d=1;d<=dim;d++){
+    const ds=ym+'-'+String(d).padStart(2,'0');
+    const done=attend.has(ds),isToday=d===today,isPast=d<today;
+    const bg=done?'var(--teal)':isToday?'var(--lblue)':' var(--lgray)';
+    const color=done?'#fff':isToday?'var(--navy)':' var(--muted)';
+    cal+=`<div style="text-align:center;padding:6px 2px;border-radius:8px;background:${bg};color:${color};font-size:13px;font-weight:${done||isToday?700:400}">${done?'✓':d}</div>`;
+  }
+  cal+='</div>';
+  const el=document.getElementById('care-calendar');
+  if(el) el.innerHTML=cal;
+  const cnt=LS.attend().filter(d=>d.startsWith(ym)).length;
+  const rate=Math.round(cnt/dim*100);
+  const ciRecs=LS.ci().filter(r=>r.session!=='skip'&&r.dateISO&&r.dateISO.startsWith(ym));
+  const streak=calcStreak();
+  const elCnt=document.getElementById('care-attend-count');
+  const elRate=document.getElementById('care-attend-rate');
+  const elStreak=document.getElementById('care-attend-streak');
+  if(elCnt) elCnt.textContent=cnt;
+  if(elRate) elRate.textContent=rate+'%';
+  if(elStreak) elStreak.textContent=streak;
+}
+
+// ============================================================
+// 個人感想
+// ============================================================
+let pfStar=0;
+function setStar(n){pfStar=n;document.querySelectorAll('#pf-stars .star').forEach((s,i)=>s.classList.toggle('active',i<n));}
+
+function savePersonal(){
+  const cfg=LS.cfg();
+  if(!cfg.name){alert('マイデータタブで名前を設定してください');return;}
+  const rec={
+    id:Date.now(),date:new Date().toLocaleDateString('ja-JP'),
+    月:document.getElementById('pf-month').value,
+    name:cfg.name,dept:cfg.dept||'',
+    首肩:parseInt(document.getElementById('pf-neck').value),
+    腰:parseInt(document.getElementById('pf-back').value),
+    頭痛目:parseInt(document.getElementById('pf-head').value),
+    眠り:parseInt(document.getElementById('pf-sleep').value),
+    疲労:parseInt(document.getElementById('pf-fatigue').value),
+    集中力:parseInt(document.getElementById('pf-conc').value),
+    満足度:pfStar,
+    コメント:document.getElementById('pf-comment').value,
+  };
+  const d=LS.personal();d.unshift(rec);LS.savePersonal(d);
+  renderPersonalList();
+  alert('感想を保存しました（'+rec.月+'）');
+}
+
+function renderPersonalList(){
+  const d=LS.personal();
+  const el=document.getElementById('personal-list');
+  if(!d.length){el.innerHTML='<div style="color:var(--muted);font-size:13px">まだ記録がありません</div>';return;}
+  el.innerHTML=d.slice(0,6).map(r=>{
+    const avg=(r.首肩+r.腰+r.頭痛目+r.眠り+r.疲労+r.集中力)/6;
+    const stars='★'.repeat(r.満足度||0)+'☆'.repeat(5-(r.満足度||0));
+    return `<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+        <div style="font-weight:700;font-size:14px">${r.月} <span style="font-size:12px;color:var(--muted);font-weight:400">/ ${r.date}</span></div>
+        <span style="color:var(--amber);font-size:13px">${stars}</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted)">平均改善度: ${avg.toFixed(1)}/5.0　${r.コメント?'「'+r.コメント.slice(0,30)+(r.コメント.length>30?'…':'')+'」':'' }</div>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// データエクスポート（管理者へ提出用）
+// ============================================================
+function exportData(period){
+  const cfg=LS.cfg();
+  if(!cfg.name){alert('マイデータタブで名前を設定してから提出してください');return;}
+  const now=new Date();
+  let ciRecords=LS.ci();
+  let personalRecords=LS.personal();
+  let attendRecords=LS.attend();
+
+  if(period==='week'){
+    // 今週分のみ
+    const monday=new Date(now);const dow=now.getDay();
+    monday.setDate(now.getDate()-(dow===0?6:dow-1));monday.setHours(0,0,0,0);
+    ciRecords=ciRecords.filter(r=>{const d=new Date(r.id);return d>=monday;});
+    attendRecords=attendRecords.filter(ds=>{
+      const d=new Date(ds);return d>=monday;
+    });
+  } else {
+    // 今月分のみ
+    const ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+    ciRecords=ciRecords.filter(r=>r.dateISO&&r.dateISO.startsWith(ym));
+    personalRecords=personalRecords.filter(r=>r.月&&r.月.startsWith(ym));
+    attendRecords=attendRecords.filter(ds=>ds.startsWith(ym));
+  }
+
+  const exportPayload={
+    exportedAt:now.toISOString(),
+    period,
+    staff:{name:cfg.name,dept:cfg.dept||'',job:cfg.job||'desk'},
+    checkins:ciRecords,
+    attendance:attendRecords,
+    personal:personalRecords,
+    summary:{
+      streak:calcStreak(),
+      monthCount:calcMonthCount(),
+      ciCount:ciRecords.filter(r=>r.session!=='skip').length,
+      avgNeck:avg(ciRecords.filter(r=>r.neck>0).map(r=>r.neck)),
+      avgBack:avg(ciRecords.filter(r=>r.back>0).map(r=>r.back)),
+      avgFocus:avg(ciRecords.filter(r=>r.focus>0).map(r=>r.focus)),
+    }
+  };
+
+  const periodLabel=period==='week'?'今週':'今月';
+  const filename='kohaku_'+cfg.name.replace(/\s/g,'_')+'_'+periodLabel+'_'+now.toISOString().slice(0,10)+'.json';
+  const a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(JSON.stringify(exportPayload,null,2));
+  a.download=filename;a.click();
+  alert(periodLabel+'のデータをエクスポートしました。\nファイル名: '+filename+'\n\n管理者（車田 愼吾）にメールまたはLINEで送付してください。');
+}
+
+function avg(arr){return arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length*10)/10:0;}
+
+function renderExportPreview(){
+  const ci=LS.ci();const personal=LS.personal();const attend=LS.attend();
+  const now=new Date();
+  const ym=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const el=document.getElementById('export-preview');
+  if(!el) return;
+  el.innerHTML=`
+    <div style="margin-bottom:6px">チェックイン記録：<strong>${ci.length}件</strong>（今月：${ci.filter(r=>r.dateISO&&r.dateISO.startsWith(ym)).length}件）</div>
+    <div style="margin-bottom:6px">参加記録：<strong>${attend.length}日</strong>（今月：${attend.filter(d=>d.startsWith(ym)).length}日）</div>
+    <div style="margin-bottom:6px">個人感想：<strong>${personal.length}件</strong></div>
+    <div style="margin-bottom:6px">連続日数：<strong>${calcStreak()}日</strong></div>
+    <div style="color:var(--muted);font-size:12px;margin-top:8px">エクスポートするとJSONファイルがダウンロードされます。管理者アプリで読み込むと全データが統合されます。</div>`;
+}
+
+// ============================================================
+// 設定
+// ============================================================
+function saveCfg(){
+  const name=document.getElementById('cfg-name').value.trim();
+  if(!name){alert('氏名を入力してください');return;}
+  LS.set('sc_cfg',{
+    name,
+    dept:document.getElementById('cfg-dept').value,
+    job:document.getElementById('cfg-job').value,
+  });
+  renderDash();
+  alert('設定を保存しました');
+}
+function loadCfgForm(){
+  const cfg=LS.cfg();
+  const n=document.getElementById('cfg-name');const d=document.getElementById('cfg-dept');const j=document.getElementById('cfg-job');
+  if(n) n.value=cfg.name||'';
+  if(d) d.value=cfg.dept||'';
+  if(j) j.value=cfg.job||'desk';
+  renderExportPreview();
+}
+function clearMyData(){
+  if(confirm('自分のデータをすべて削除します。\nエクスポートしていない場合は先に提出してください。\n\n本当に削除しますか？')){
+    ['sc_ci_records','sc_attend','sc_personal'].forEach(k=>localStorage.removeItem(k));
+    alert('データを削除しました');
+    renderDash();renderPersonalList();renderExportPreview();
+  }
+}
+
+// ============================================================
+// 初期化
+// ============================================================
+document.getElementById('pf-month').value=new Date().toISOString().slice(0,7);
+renderDash();
+</script>
+</body>
+</html>
