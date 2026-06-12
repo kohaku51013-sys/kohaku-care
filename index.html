@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="毎日ケア">
+<meta name="apple-mobile-web-app-title" content="KOHAKUしせい事">
 <title>毎日ケア — Posture × Productivity</title>
 <style>
 :root{
@@ -61,7 +61,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 
 <div class="hdr">
   <div>
-    <h1>毎日ケア — P×P</h1>
+    <h1>KOHAKU しせい事</h1>
     <div class="hdr-sub" id="hdr-name">設定から名前を入力してください</div>
   </div>
   <div id="streak-badge" style="font-size:12px;font-weight:700;color:#4ade80"></div>
@@ -111,7 +111,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;heigh
 <!-- ===== 毎日ケア ===== -->
 <div id="sec-care" class="sec">
   <div class="card" style="background:linear-gradient(135deg,#0F6E56,#185FA5);color:#fff;border:none;margin-bottom:12px">
-    <div style="font-size:16px;font-weight:700;margin-bottom:4px">毎日5〜10分 セルフケア</div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">KOHAKU しせい事 セルフケア</div>
     <div style="font-size:12px;opacity:.8">職種別プログラム × 月次ローテーション</div>
   </div>
 
@@ -292,7 +292,7 @@ const WEEKLY_THEMES=[
   {title:'壁立ちドリル週間',sub:'正しい姿勢を体に覚えさせる',ex:['E-05','E-01']},
   {title:'足裏・足首ケア週間',sub:'全身の姿勢を下から支える',ex:['S-07','E-06']},
   {title:'自律神経リセット週間',sub:'4-7-8呼吸で午後の集中力UP',ex:['E-07','S-09']},
-  {title:'ラジオ体操強化週間',sub:'全身を3分でリフレッシュ',ex:['E-09','S-08']},
+  {title:'全身リフレッシュ週間',sub:'全身を3分でリフレッシュ',ex:[,'S-08']},
   {title:'総合姿勢チェック週間',sub:'全部位を順番に確認する',ex:['E-05','S-03']},
 ];
 function getWeeklyTheme(){
@@ -453,17 +453,14 @@ const EXERCISES={
   'E-08':{name:'グッドモーニング',type:'E',area:'腰背部',time:2,
     desc:'足幅肩幅、膝を軽く曲げ上体を前傾させゆっくり起こす。10回×2セット。',
     youtube:'https://www.youtube.com/watch?v=yM14vLOHJco'},
-  'E-09':{name:'ラジオ体操第一',type:'E',area:'全身',time:3,
-    desc:'NHKラジオ体操第一を1回通しで実施。全身の関節を動かし血行促進。',
-    youtube:'https://www.youtube.com/watch?v=_YZZfaMGEOU'},
   'E-10':{name:'オフィス・スクワット',type:'E',area:'下肢',time:2,
     desc:'椅子から立つ座る動作を応用。深く腰を落とし10回×2セット。',
     youtube:'https://www.youtube.com/watch?v=yM14vLOHJco'},
 };
 const PROGRAMS={
-  desk:{1:['S-01','S-02','S-03','E-09','E-07'],2:['S-04','E-01','E-02','E-03','E-09'],3:['E-01','E-04','E-05','S-01','E-09'],4:['S-02','S-03','E-02','E-04','E-07','E-09']},
-  stand:{1:['S-04','S-06','S-07','E-09','E-06'],2:['S-05','S-10','E-10','E-06','E-09'],3:['S-04','S-07','E-06','E-08','E-09'],4:['S-05','S-06','E-06','E-10','E-07','E-09']},
-  sales:{1:['S-01','S-09','E-07','E-09','E-05'],2:['S-10','E-08','E-01','E-07','E-09'],3:['S-01','S-09','E-05','E-07','E-09'],4:['S-01','S-10','E-01','E-08','E-07','E-09']},
+  desk:{1:['S-01','S-02','S-03','E-07'],2:['S-04','E-01','E-02','E-03'],3:['E-01','E-04','E-05','S-01'],4:['S-02','S-03','E-02','E-04','E-07']},
+  stand:{1:['S-04','S-06','S-07','E-06'],2:['S-05','S-10','E-10','E-06'],3:['S-04','S-07','E-06','E-08'],4:['S-05','S-06','E-06','E-10','E-07']},
+  sales:{1:['S-01','S-09','E-07','E-05'],2:['S-10','E-08','E-01','E-07'],3:['S-01','S-09','E-05','E-07'],4:['S-01','S-10','E-01','E-08','E-07']},
 };
 
 function renderCareProgram(){
